@@ -1,6 +1,8 @@
 
 package com.badlogic.gdx.tools.ktx;
 
+import static com.badlogic.gdx.utils.SharedLibraryLoader.isLinux;
+
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.DataOutputStream;
@@ -107,7 +109,7 @@ public class KTXProcessor {
 				System.out
 					.println("    -etc1a   input file will be packed using ETC1 compression, doubling the height and placing the alpha channel in the bottom half");
 				System.out
-					.println("    -RGB8, -SRGB8, -RGBA8, -SRGB8, -RGB8A1, -SRGB8A1, -R11   input file will be packed using ETC2 compression and specified format (Win64 only)");
+					.println("    -RGB8, -SRGB8, -RGBA8, -SRGB8, -RGB8A1, -SRGB8A1, -R11   input file will be packed using ETC2 compression and specified format (Win64, Linux only)");
 				System.out.println("    -mipmaps input file will be processed to generate mipmaps");
 				System.out.println();
 				System.out.println("  examples:");
@@ -125,9 +127,6 @@ public class KTXProcessor {
 			}
 
 			LwjglNativesLoader.load();
-			if(SharedLibraryLoader.isWindows) {
-				
-			}
 			
 			String etc2Format = "RGBA8";
 			String[] et2Attr = {"-RGB8", "-SRGB8", "-RGBA8", "-SRGB8", "-RGB8A1", "-SRGB8A1", "-R11"};
@@ -385,9 +384,16 @@ public class KTXProcessor {
 		try {
 			final URI uri;
 			final URI exe;
+			
+			final String libName;
+			if(SharedLibraryLoader.isWindows) {
+				libName = "etctool.exe";
+			} else if (isLinux) {
+				libName = "etctool.bin";
+			} else return null;
 
 			uri = Extractor.getJarURI();
-			exe = Extractor.getFile(uri, "etctool.exe", "etctool");
+			exe = Extractor.getFile(uri, libName, "etctool");
 			int index = outputPath.lastIndexOf(".");
 			if (index >= 0) outputPath = outputPath.substring(0, index) + etc2Format + ".ktx";
 
