@@ -384,13 +384,14 @@ public class KTXProcessor {
 		try {
 			final URI uri;
 			final URI exe;
-			
+
 			final String libName;
-			if(SharedLibraryLoader.isWindows) {
+			if (SharedLibraryLoader.isWindows) {
 				libName = "etctool.exe";
 			} else if (isLinux) {
 				libName = "etctool.bin";
-			} else return null;
+			} else
+				return null;
 
 			uri = Extractor.getJarURI();
 			exe = Extractor.getFile(uri, libName, "etctool");
@@ -512,6 +513,9 @@ public class KTXProcessor {
 
 			tempFile = File.createTempFile(newName, Long.toString(System.currentTimeMillis()));
 			tempFile.deleteOnExit();
+			tempFile.setReadable(true);
+			tempFile.setWritable(true);
+			tempFile.setExecutable(true);
 			entry = zipFile.getEntry(fileName);
 
 			if (entry == null) {
